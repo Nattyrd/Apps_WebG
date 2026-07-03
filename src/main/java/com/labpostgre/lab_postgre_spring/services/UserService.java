@@ -1,0 +1,103 @@
+package com.labpostgre.lab_postgre_spring.services;
+
+
+
+ 
+import com.labpostgre.lab_postgre_spring.dto.*;
+import com.labpostgre.lab_postgre_spring.exceptions.BadRequestException;
+import com.labpostgre.lab_postgre_spring.exceptions.InvalidCredentialsException;
+import com.labpostgre.lab_postgre_spring.exceptions.ResourceNotFoundException;
+import com.labpostgre.lab_postgre_spring.models.User;
+import com.labpostgre.lab_postgre_spring.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+ 
+@Service
+@RequiredArgsConstructor
+public class UserService {
+ 
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+ 
+    public UserResponse registerUser(RegisterUserRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new BadRequestException("El correo ya se encuentra registrado");
+        }
+ 
+        User user = User.builder()
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .address(request.address())
+                .phoneNumber(request.phoneNumber())
+                .build();
+ 
+        User savedUser = userRepository.save(user);
+        return toResponse(savedUser);
+    }
+ 
+    public UserResponse loginUser(LoginRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(InvalidCredentialsException::new);
+ 
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+ 
+        return toResponse(user);
+    }
+ 
+    public UserResponse readUser(Integer id) {
+        User user = findUserEntity(id);
+        return toResponse(user);
+    }
+ 
+    public UserResponse updateUser(Integer id, UpdateUserRequest request) {
+        User user = findUserEntity(id);
+ 
+        if (request.firstName() != null) user.setFirstName(request.firstName());
+        if (request.lastName() != null) user.setLastName(request.lastName());
+ 
+        if (request.email() != null && !request.email().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(request.email())) {
+                throw new BadRequestException("El correo ya se encuentra registrado");
+            }
+            user.setEmail(request.email());
+        }
+ 
+        if (request.password() != null && !request.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.password()));
+        }
+ 
+        if (request.address() != null) user.setAddress(request.address());
+        if (request.phoneNumber() != null) user.setPhoneNumber(request.phoneNumber());
+ 
+        User updatedUser = userRepository.save(user);
+        return toResponse(updatedUser);
+    }
+ 
+    public void deleteUser(Integer id) {
+        User user = findUserEntity(id);
+        userRepository.delete(user);
+    }
+ 
+    public User findUserEntity(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+    }
+ 
+    private UserResponse toResponse(User user) {
+        return new UserResponse(
+                user.getUserId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getAddress(),
+                user.getPhoneNumber()
+        );
+    }
+}
+
+
