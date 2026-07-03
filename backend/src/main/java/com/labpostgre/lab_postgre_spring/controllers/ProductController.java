@@ -1,7 +1,7 @@
 package com.labpostgre.lab_postgre_spring.controllers;
  
 import com.labpostgre.lab_postgre_spring.dto.ProductRequest;
-import com.labpostgre.lab_postgre_spring.models.Product;
+import com.labpostgre.lab_postgre_spring.dto.ProductResponse;
 import com.labpostgre.lab_postgre_spring.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +20,23 @@ public class ProductController {
  
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product create(@Valid @RequestBody ProductRequest request) {
+    public ProductResponse create(@Valid @RequestBody ProductRequest request) {
         return productService.createProduct(request);
     }
  
     @GetMapping("/{id}")
-    public Product read(@PathVariable Integer id) {
+    public ProductResponse read(@PathVariable Integer id) {
         return productService.readProduct(id);
     }
  
     @GetMapping
-    public List<Product> readAll() {
+    public List<ProductResponse> readAll() {
         return productService.readAllProducts();
     }
  
     @PutMapping("/{id}")
-    public Product update(@PathVariable Integer id,
-                          @Valid @RequestBody ProductRequest request) {
+    public ProductResponse update(@PathVariable Integer id,
+                                  @Valid @RequestBody ProductRequest request) {
         return productService.updateProduct(id, request);
     }
  

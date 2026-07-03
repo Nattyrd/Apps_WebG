@@ -10,6 +10,8 @@ import lombok.*;
  
 import java.math.BigDecimal;
 
+import com.labpostgre.lab_postgre_spring.models.Category;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -37,6 +39,10 @@ public class Product {
     @Min(0)
     @Column(nullable = false)
     private Integer amount;
+ 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
  
     private String imageUrl;
 }

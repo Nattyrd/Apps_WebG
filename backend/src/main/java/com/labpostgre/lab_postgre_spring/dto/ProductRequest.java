@@ -12,6 +12,7 @@ public record ProductRequest(
         @NotNull @DecimalMin("0.01") BigDecimal price,
         String description,
         @NotNull @Min(0) Integer amount,
+        @NotNull Integer categoryId,
         String imageUrl
 ) {
 }
