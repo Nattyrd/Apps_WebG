@@ -1,6 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
-// @ts-ignore: allow importing css without type declarations
 import Home from './Components/Home';
 import { BrowserRouter } from 'react-router-dom';
 import { UserProvider } from './Context/UserContext';

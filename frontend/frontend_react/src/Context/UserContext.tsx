@@ -46,11 +46,7 @@ export const UserProvider: React.FC<ProviderProps> = ({ children }) => {
 
   // Actualizar un usuario existente
   const updateUser = (id: number) => {
-    users.filter((user: User) => {
-      if (user.userId === id) {
-        setUsers([...users]);
-      }
-    });
+    setUsers(users.filter((user: User) => user.userId === id));
   };
 
   // Eliminar un usuario
