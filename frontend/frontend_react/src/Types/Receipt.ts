@@ -1,5 +1,5 @@
 export type Receipt = {
-    id: number;
+    items: Items[];
     userId: number;
     receiptNumber: number;
     dateTime: string;
